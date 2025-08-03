@@ -1,0 +1,41 @@
+
+model:
+  image_size: 224
+  patch_size: 16
+  num_classes: 2
+  embed_dim: 512
+  depth: 12
+  heads: 8
+  mlp_ratio: 4.0
+  dropout: 0.15
+  drop_path_rate: 0.1
+  use_se: true
+
+training:
+  batch_size: 24
+  num_workers: 4
+  learning_rate: 0.0002
+  weight_decay: 0.001
+  epochs: 50
+  early_stopping_patience: 10
+  scheduler: cosine
+  grad_accum_steps: 1
+  use_amp: true
+  use_ema: true
+  label_smoothing: 0.05
+  use_mixup: false
+  use_cutmix: false
+
+augmentation:
+  horizontal_flip: 0.5
+  rotation: 0
+  color_jitter: [0.0, 0.0, 0.0, 0.0]
+  random_erasing: 0.1
+
+paths:
+  checkpoint_dir: results
+  log_file: logs/training.log
+
+logging:
+  level: INFO
+  log_interval: 10

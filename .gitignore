@@ -1,0 +1,61 @@
+# Bỏ qua môi trường ảo
+.venv/
+
+# Cho phép thư mục results được push lên (chứa trained models)
+# results/ - REMOVED to allow pushing trained models
+
+# Bỏ qua toàn bộ dataset (ảnh, dữ liệu gốc)
+src/data/train/
+src/data/test/
+src/data/validation/
+
+# Nếu có thư mục data ở ngoài src (dự phòng)
+data/
+
+# Không bỏ qua các file code Python trong src/data
+!src/data/*.py
+
+# Bỏ qua tất cả file Python cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Bỏ qua file logs
+*.log
+logs/
+
+# Cho phép thư mục uploads được push lên
+# uploads/ - REMOVED to allow pushing demo files
+
+# Bỏ qua file IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Bỏ qua model weights và checkpoints (trừ best_model.pth trong results/ - managed by LFS)
+# *.pth - Now managed by Git LFS
+!results/**/best_model.pth
+*.pt
+*.h5
+*.pkl
+*.model
