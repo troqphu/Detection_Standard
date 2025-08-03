@@ -52,8 +52,8 @@ logs/
 *.swo
 *~
 
-# Bỏ qua model weights và checkpoints (trừ best_model.pth trong results/ - managed by LFS)
-# *.pth - Now managed by Git LFS
+# Bỏ qua model weights và checkpoints (trừ best_model.pth trong results/)
+*.pth
 !results/**/best_model.pth
 *.pt
 *.h5

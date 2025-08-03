@@ -563,13 +563,13 @@ if __name__ == "__main__":
     print(f"🌐 Access web interface at: http://127.0.0.1:{port}")
     print(f"📊 API status at: http://127.0.0.1:{port}/status")
     
-    # Get port from environment (Railway) or use default
-    port = int(os.getenv('PORT', find_free_port()))
-    host = os.getenv('HOST', '0.0.0.0')
+    port = find_free_port()
+    print(f"🔥 Starting Enhanced Fake Detection API on port {port}")
+    print(f"🌐 Access web interface at: http://127.0.0.1:{port}")
+    print(f"📊 API status at: http://127.0.0.1:{port}/status")
     
     try:
-        uvicorn.run("api:app", host=host, port=port, reload=False)
+        uvicorn.run("api:app", host="127.0.0.1", port=port, reload=False)
     except Exception as e:
         print(f"❌ Server error: {e}")
-        if not os.getenv('PORT'):  # Only wait for input in local development
-            input("Press Enter to exit...")
+        input("Press Enter to exit...")
