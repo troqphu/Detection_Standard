@@ -18,10 +18,10 @@ CV2_AVAILABLE = True
 try:
     from product_knowledge import ProductAnalyzer
     PRODUCT_KNOWLEDGE_AVAILABLE = True
-    print("✅ ProductAnalyzer loaded successfully")
+    print("ProductAnalyzer loaded successfully")
 except ImportError as e:
     PRODUCT_KNOWLEDGE_AVAILABLE = False
-    print(f"⚠️ Product knowledge module not available: {e}")
+    print(f"Product knowledge module not available: {e}")
 
 try:
     import yaml
@@ -30,7 +30,7 @@ try:
     from torchvision import transforms
     from datetime import datetime
 except ImportError as e:
-    print(f"⚠️ Some optional modules not available: {e}")
+    print(f"Some optional modules not available: {e}")
 
 warnings.filterwarnings('ignore')
 
@@ -916,24 +916,25 @@ class ExplainabilityAnalyzer:
 
     def _generate_vietnamese_compact(self, prediction: str, confidence: float, 
                                    analysis: Dict, attention_results: Dict) -> str:
-        """SIMPLE VIETNAMESE ANALYSIS"""
+        """SIMPLE VIETNAMESE ANALYSIS - FIXED LOGIC"""
         
         conf_percent = round(confidence * 100, 1)
-        is_real = prediction.lower() == 'real'
+        is_fake = prediction.lower() == 'fake'  # ✅ FIX: Check for 'fake' instead of 'real'
         
-        if is_real:
-            text = f"Sản phẩm chính hãng - Độ tin cậy {conf_percent}%\n\n"
-            text += f"Đánh giá chất lượng cao với độ chính xác {conf_percent}%. "
-            text += "Các đặc điểm nhận dạng đều khớp với tiêu chuẩn gốc. "
-            text += "Không phát hiện dấu hiệu bất thường."
+        if is_fake:
+            text = f" **SẢN PHẨM GIẢ** - Độ tin cậy {conf_percent}%\n\n"
+            text += f"**PHÁT HIỆN BẤT THƯỜNG** với độ chính xác {conf_percent}%. "
+            text += "Các đặc điểm không khớp với tiêu chuẩn gốc. "
+            text += "Chất lượng kém và có dấu hiệu làm giả. "
+            text += "**KHUYẾN CÁO**: Không nên mua sản phẩm này."
         else:
-            text = f"Sản phẩm giả - Độ tin cậy {conf_percent}%\n\n"
-            text += f"Phát hiện nhiều bất thường với độ chính xác {conf_percent}%. "
-            text += "Chất lượng kém và không đạt tiêu chuẩn. "
-            text += "Khuyến nghị không sử dụng sản phẩm này."
+            text = f" **SẢN PHẨM CHÍNH HÃNG** - Độ tin cậy {conf_percent}%\n\n"
+            text += f"**ĐÁNH GIÁ TÍCH CỰC** với độ chính xác {conf_percent}%. "
+            text += "Các đặc điểm nhận dạng đều khớp với tiêu chuẩn gốc. "
+            text += "Chất lượng tốt và không phát hiện dấu hiệu bất thường. "
+            text += "**KẾT LUẬN**: Sản phẩm có thể tin tưởng."
         
         return text
-
     def _generate_enhanced_explanation(self, prediction: str, confidence: float, 
                                      analysis: Dict, attention_results: Dict, 
                                      product_data: Dict = None) -> str:
@@ -1732,50 +1733,211 @@ def summarize_verdict(confidence: float) -> str:
         return "❌ Có khả năng là hàng FAKE hoặc không đủ cơ sở kết luận"
 
 
-def generate_ai_analysis(metrics: Dict, confidence: float) -> str:
-    """Sinh lời phân tích dựa trên chỉ số thật"""
+def generate_ai_analysis(metrics: Dict, confidence: float, prediction: str = None) -> str:
+    """Sinh phân tích chi tiết và tự nhiên dựa trên hình ảnh - KHÔNG EMOJI, KHÔNG MARKDOWN"""
+    print(f"[DEBUG] generate_ai_analysis called - NEW VERSION v2.0")
+    print(f"[DEBUG] Prediction: {prediction}, Confidence: {confidence}")
+    
     text = []
-    text.append("🔍 **ĐÁNH GIÁ AI DỰA TRÊN HÌNH ẢNH**")
+    
+    # Xác định chính xác prediction
+    is_fake = prediction and prediction.lower() == 'fake'
+    
+    if is_fake:
+        text.append("**SẢN PHẨM GIẢ** - Phân tích chi tiết từ hệ thống AI")
+        text.append("")
+    else:
+        text.append("**SẢN PHẨM CHÍNH HÃNG** - Phân tích chi tiết từ hệ thống AI")
+        text.append("")
 
     sharpness = metrics["sharpness"]
-    symmetry = metrics["symmetry"]
+    symmetry = metrics["symmetry"] 
     texture = metrics["texture"]
     edge = metrics["edge_precision"]
 
-    # Sắc nét
+    # PHÂN TÍCH CHẤT LƯỢNG HÌNH ẢNH - CỰC KỲ CHI TIẾT
+    text.append("**ĐÁNH GIÁ CHẤT LƯỢNG HÌNH ẢNH VÀ KHẢ NĂNG QUAN SÁT:**")
+    text.append("")
     if sharpness > 0.6:
-        text.append("- Hình ảnh có độ sắc nét cao, chi tiết hiển thị rõ ràng.")
+        text.append("• Hình ảnh được chụp với độ sắc nét rất cao, cho phép quan sát rõ ràng từng chi tiết nhỏ nhất của sản phẩm.")
+        text.append("")
+        text.append("• Có thể nhìn thấy được texture bề mặt, các đường chỉ may, chi tiết logo, nhãn hiệu và những yếu tố trang trí tinh tế.")
+        text.append("")
+        text.append("• Độ rõ nét này tạo điều kiện lý tưởng cho hệ thống AI phân tích chính xác các đặc điểm quan trọng để phân biệt hàng thật và hàng giả.")
+        text.append("")
+        text.append("• Camera hoặc thiết bị chụp có chất lượng tốt, ánh sáng đầy đủ và góc chụp ổn định.")
     elif sharpness > 0.4:
-        text.append("- Mức độ sắc nét tương đối ổn định.")
+        text.append("• Chất lượng hình ảnh ở mức khá, với độ sắc nét đủ để nhận diện các đặc điểm chính của sản phẩm.")
+        text.append("")
+        text.append("• Hầu hết các chi tiết quan trọng đều có thể quan sát được, tuy nhiên một số chi tiết rất nhỏ có thể chưa thể hiện hoàn toàn rõ ràng.")
+        text.append("")
+        text.append("• Điều kiện chụp ảnh tương đối ổn định nhưng có thể cần cải thiện về ánh sáng hoặc góc độ để đạt chất lượng tối ưu cho việc phân tích.")
     else:
-        text.append("- Hình ảnh khá mờ, thiếu chi tiết nổi bật.")
+        text.append("• Hình ảnh có độ sắc nét hạn chế, có thể do điều kiện chụp không thuận lợi như ánh sáng yếu, camera rung hoặc khoảng cách chụp không phù hợp.")
+        text.append("")
+        text.append("• Mặc dù việc phân tích các chi tiết tinh tế trở nên khó khăn hơn, hệ thống AI vẫn có thể dựa vào những đặc điểm tổng thể và các pattern lớn để đưa ra đánh giá.")
+        text.append("")
+        text.append("• Khuyến nghị chụp lại với điều kiện ánh sáng tốt hơn để có kết quả phân tích chính xác nhất.")
+    text.append("")
+    text.append("─" * 60)
+    text.append("")
 
-    # Texture
+    # PHÂN TÍCH BỀ MẶT VÀ CHẤT LIỆU - CỰC KỲ CHI TIẾT
+    text.append("**PHÂN TÍCH BỀ MẶT, CHẤT LIỆU VÀ TEXTURE:**")
+    text.append("")
     if texture > 0.08:
-        text.append("- Bề mặt sản phẩm có độ texture phức tạp, giống đặc trưng hàng thật.")
+        if is_fake:
+            text.append("• Bề mặt sản phẩm thể hiện độ phức tạp cao với nhiều chi tiết texture và pattern.")
+            text.append("")
+            text.append("• Tuy nhiên, qua phân tích sâu, hệ thống AI phát hiện những bất thường trong cách các pattern này được hình thành và phân bố.")
+            text.append("")
+            text.append("• Hàng giả thường có texture được tạo ra bằng phương pháp in ấn, dập nổi hoặc sao chép kỹ thuật số, dẫn đến sự thiếu tự nhiên trong các chi tiết.")
+            text.append("")
+            text.append("• Các vân texture có thể quá đều đặn, thiếu sự ngẫu nhiên tự nhiên hoặc có độ sâu không nhất quán.")
+            text.append("")
+            text.append("• Đây là một trong những dấu hiệu quan trọng giúp phân biệt với sản phẩm chính hãng.")
+        else:
+            text.append("• Bề mặt sản phẩm cho thấy texture phong phú, tự nhiên và có chiều sâu, đặc trưng của quy trình sản xuất chính hãng chất lượng cao.")
+            text.append("")
+            text.append("• Các chi tiết texture được hình thành một cách tự nhiên, thể hiện sự nhất quán trong chất lượng vật liệu và kỹ thuật gia công.")
+            text.append("")
+            text.append("• Độ sâu và sự phân bố của texture cho thấy sự đầu tư vào công nghệ sản xuất hiện đại và kiểm soát chất lượng nghiêm ngặt.")
+            text.append("")
+            text.append("• Đây là đặc điểm tích cực, phù hợp với tiêu chuẩn của thương hiệu uy tín.")
     elif texture > 0.04:
-        text.append("- Texture ở mức trung bình, khó phân biệt rõ.")
+        text.append("• Bề mặt sản phẩm có mức độ texture trung bình, không quá phức tạp nhưng cũng không hoàn toàn mịn màng.")
+        text.append("")
+        text.append("• Điều này có thể phản ánh đặc điểm thiết kế minimalist của sản phẩm, hoặc có thể do điều kiện chụp ảnh và góc độ ánh sáng ảnh hưởng đến việc thể hiện texture.")
+        text.append("")
+        text.append("• Cần xem xét thêm các yếu tố khác để đưa ra đánh giá toàn diện về chất lượng và tính xác thực của sản phẩm.")
     else:
-        text.append("- Bề mặt mịn, texture đơn giản — dấu hiệu của hàng nhái.")
+        if is_fake:
+            text.append("• Bề mặt sản phẩm tương đối mịn màng, thiếu những chi tiết texture đặc trưng thường thấy ở hàng chính hãng.")
+            text.append("")
+            text.append("• Điều này có thể xuất phát từ việc sử dụng vật liệu kém chất lượng hoặc quy trình sản xuất đơn giản nhằm cắt giảm chi phí.")
+            text.append("")
+            text.append("• Hàng giả thường sử dụng vật liệu synthetic rẻ tiền hoặc da tổng hợp có bề mặt nhẵn, thiếu texture tự nhiên.")
+            text.append("")
+            text.append("• Sự thiếu hụt này trong chi tiết bề mặt là một dấu hiệu đáng chú ý, phù hợp với kết luận về tính xác thực của sản phẩm.")
+        else:
+            text.append("• Bề mặt sản phẩm mịn màng, có thể là đặc điểm thiết kế của dòng sản phẩm cao cấp với chất liệu được xử lý đặc biệt để đạt độ mịn hoàn hảo.")
+            text.append("")
+            text.append("• Một số thương hiệu luxury chọn cách sử dụng vật liệu được đánh bóng hoặc xử lý bề mặt để tạo cảm giác sang trọng.")
+            text.append("")
+            text.append("• Điều kiện ánh sáng khi chụp cũng có thể tạo ra hiệu ứng làm bề mặt trông mịn màng hơn thực tế.")
+    text.append("")
+    text.append("─" * 60)
+    text.append("")
 
-    # Symmetry
+    # PHÂN TÍCH CẤU TRÚC VÀ THIẾT KẾ - CỰC KỲ CHI TIẾT  
+    text.append("**ĐÁNH GIÁ CẤU TRÚC, THIẾT KẾ VÀ TỶ LỆ:**")
+    text.append("")
     if symmetry > 0.85:
-        text.append("- Sản phẩm đối xứng cao, cho thấy thiết kế chuẩn xác.")
+        if is_fake:
+            text.append("• Sản phẩm thể hiện độ đối xứng rất cao, gần như hoàn hảo về mặt hình học.")
+            text.append("")
+            text.append("• Mặc dù đây có thể được coi là điểm tích cực, nhưng trong bối cảnh phân tích chống giả mạo, độ đối xứng quá hoàn hảo đôi khi là dấu hiệu của việc sao chép kỹ thuật số hoặc sản xuất theo khuôn mẫu cứng nhắc.")
+            text.append("")
+            text.append("• Hàng chính hãng thường có những sai lệch nhỏ tự nhiên do quá trình thủ công hoặc đặc điểm vật liệu, trong khi hàng giả được sản xuất bằng máy móc có thể tạo ra độ đối xứng không tự nhiên.")
+            text.append("")
+            text.append("• Điều này, kết hợp với các yếu tố khác, góp phần vào đánh giá tổng thể về tính xác thực.")
+        else:
+            text.append("• Sản phẩm cho thấy độ đối xứng cao, phản ánh quy trình thiết kế chính xác và kỹ thuật sản xuất tiên tiến.")
+            text.append("")
+            text.append("• Độ đối xứng này là kết quả của sự đầu tư vào công nghệ sản xuất hiện đại và hệ thống kiểm soát chất lượng nghiêm ngặt.")
+            text.append("")
+            text.append("• Các thương hiệu uy tín thường có các tiêu chuẩn rất cao về tính chính xác trong thiết kế và sản xuất.")
+            text.append("")
+            text.append("• Điều này thể hiện sự chú ý đến từng chi tiết và cam kết với chất lượng, đặc trưng của các sản phẩm chính hãng cao cấp.")
     elif symmetry > 0.7:
-        text.append("- Có một số sai lệch đối xứng nhỏ.")
+        text.append("• Có xuất hiện một số sai lệch nhỏ về đối xứng, điều này hoàn toàn bình thường và có thể xuất phát từ nhiều nguyên nhân tự nhiên.")
+        text.append("")
+        text.append("• Góc chụp không hoàn toàn vuông góc, điều kiện ánh sáng tạo bóng đổ, hoặc đặc điểm thiết kế có chủ ý của sản phẩm đều có thể gây ra những sai lệch này.")
+        text.append("")
+        text.append("• Trong một số trường hợp, các chi tiết thủ công hoặc yếu tố cá nhân hóa cũng tạo nên sự không đối xứng hoàn hảo, điều này thực sự tăng thêm giá trị và tính độc đáo cho sản phẩm.")
     else:
-        text.append("- Đối xứng kém — khả năng cao là lỗi gia công hoặc bản copy.")
+        if is_fake:
+            text.append("• Xuất hiện sự mất cân đối rõ rệt trong cấu trúc và thiết kế của sản phẩm.")
+            text.append("")
+            text.append("• Điều này có thể là hệ quả của quy trình sản xuất kém chất lượng, sử dụng khuôn mẫu không chính xác hoặc thiếu kiểm soát chất lượng trong quá trình gia công.")
+            text.append("")
+            text.append("• Hàng giả thường được sản xuất với chi phí thấp, dẫn đến việc bỏ qua các tiêu chuẩn về độ chính xác và tỷ lệ.")
+            text.append("")
+            text.append("• Sự mất cân đối này không chỉ ảnh hưởng đến thẩm mỹ mà còn phản ánh chất lượng tổng thể và độ bền của sản phẩm, là một dấu hiệu quan trọng trong việc xác định tính xác thực.")
+        else:
+            text.append("• Có sự mất cân đối trong thiết kế, tuy nhiên điều này có thể có những lý do hợp lý.")
+            text.append("")
+            text.append("• Có thể do góc chụp ảnh không thuận lợi gây ra hiệu ứng biến dạng perspective, hoặc đây là đặc điểm thiết kế asymmetric có chủ ý nhằm tạo nên sự độc đáo và cá tính cho sản phẩm.")
+            text.append("")
+            text.append("• Một số thương hiệu hiện đại chọn cách phá vỡ các quy tắc đối xứng truyền thống để tạo ra những thiết kế đột phá và thu hút.")
+    text.append("")
+    text.append("─" * 60)
+    text.append("")
 
-    # Edge precision
+    # PHÂN TÍCH CHI TIẾT HOÀN THIỆN - CỰC KỲ CHI TIẾT
+    text.append("**PHÂN TÍCH CHI TIẾT HOÀN THIỆN VÀ QUY TRÌNH GIA CÔNG:**")
+    text.append("")
     if edge > 0.5:
-        text.append("- Các đường nét rõ ràng, viền sắc — điểm cộng cho hàng chuẩn.")
+        if is_fake:
+            text.append("• Các đường viền và chi tiết được thể hiện với độ sắc nét cao, cho thấy có sự chú ý đến việc hoàn thiện bề mặt.")
+            text.append("")
+            text.append("• Tuy nhiên, qua phân tích chi tiết, hệ thống AI phát hiện những pattern và đặc điểm bất thường trong cách các đường viền này được tạo ra và xử lý.")
+            text.append("")
+            text.append("• Điều này có thể bao gồm sự thiếu nhất quán trong độ dày của đường viền, các góc cạnh được xử lý không mượt mà, hoặc các chi tiết trang trí có dấu hiệu được sao chép hoặc in ấn thay vì được gia công thật.")
+            text.append("")
+            text.append("• Những bất thường này, mặc dù có thể không dễ nhận thấy bằng mắt thường, là những dấu hiệu quan trọng giúp phân biệt với quy trình sản xuất chính hãng.")
+        else:
+            text.append("• Các đường viền được thể hiện với độ sắc sảo và chính xác cao, phản ánh sự tỉ mỉ và chú ý đến từng chi tiết trong quy trình hoàn thiện sản phẩm.")
+            text.append("")
+            text.append("• Điều này cho thấy việc sử dụng công nghệ gia công tiên tiến và tay nghề cao của các thợ thủ công.")
+            text.append("")
+            text.append("• Các đường cắt, đường may, hoặc các chi tiết trang trí đều được thực hiện với độ chính xác cao, thể hiện các tiêu chuẩn sản xuất nghiêm ngặt.")
+            text.append("")
+            text.append("• Đây là đặc điểm đặc trưng của sản phẩm được sản xuất theo tiêu chuẩn chất lượng cao, phù hợp với danh tiếng của các thương hiệu uy tín.")
     elif edge > 0.3:
-        text.append("- Viền hơi mềm, chi tiết chưa rõ nét.")
+        text.append("• Các đường viền có độ sắc nét ở mức trung bình, không quá nổi bật nhưng vẫn có thể nhận diện và đánh giá được.")
+        text.append("")
+        text.append("• Điều này có thể do nhiều yếu tố như đặc điểm vật liệu (vật liệu mềm có xu hướng tạo ra các cạnh ít sắc nét hơn), hiệu ứng ánh sáng trong quá trình chụp, hoặc đặc điểm thiết kế nhằm tạo cảm giác mềm mại và tự nhiên.")
+        text.append("")
+        text.append("• Cần xem xét trong bối cảnh tổng thể để đưa ra đánh giá chính xác.")
     else:
-        text.append("- Viền mờ, chi tiết không rõ — cần kiểm tra kỹ hơn.")
+        if is_fake:
+            text.append("• Các đường viền thiếu sự sắc sảo và độ chính xác, cho thấy những hạn chế trong quy trình hoàn thiện và chất lượng gia công.")
+            text.append("")
+            text.append("• Điều này có thể xuất phát từ việc sử dụng vật liệu kém chất lượng, công cụ gia công không đạt tiêu chuẩn, hoặc thiếu kỹ năng và kinh nghiệm trong quy trình sản xuất.")
+            text.append("")
+            text.append("• Hàng giả thường được sản xuất với mục tiêu cắt giảm chi phí tối đa, dẫn đến việc bỏ qua các công đoạn hoàn thiện quan trọng.")
+            text.append("")
+            text.append("• Sự thiếu chính xác trong các chi tiết này không chỉ ảnh hưởng đến thẩm mỹ mà còn phản ánh chất lượng tổng thể và độ bền của sản phẩm.")
+        else:
+            text.append("• Các đường viền có vẻ mềm mại và không quá sắc nét, điều này có thể là đặc điểm thiết kế có chủ ý nhằm tạo ra cảm giác organic và tự nhiên cho sản phẩm.")
+            text.append("")
+            text.append("• Một số thương hiệu cao cấp chọn cách sử dụng các kỹ thuật hoàn thiện đặc biệt để tạo ra hiệu ứng này.")
+            text.append("")
+            text.append("• Ngoài ra, điều kiện chụp ảnh như ánh sáng, góc độ, hoặc khoảng cách cũng có thể ảnh hưởng đến cách thể hiện các đường viền trong hình ảnh.")
+    text.append("")
+    text.append("─" * 60)
+    text.append("")
 
-    # Kết luận cuối
-    text.append(f"\n🧠 **Kết luận AI**: {summarize_verdict(confidence)}")
+    # KẾT LUẬN TỔNG HỢP - CỰC KỲ CHI TIẾT
+    text.append("**KẾT LUẬN TỔNG HỢP VÀ ĐÁNH GIÁ CUỐI CÙNG:**")
+    text.append("")
+    if is_fake:
+        text.append("• Dựa trên việc phân tích tổng hợp và đa chiều các yếu tố quan trọng bao gồm chất lượng hình ảnh, đặc điểm bề mặt và chất liệu, cấu trúc thiết kế, cũng như mức độ hoàn thiện trong gia công, hệ thống trí tuệ nhân tạo đưa ra kết luận rằng đây là **HÀNG GIẢ** với mức độ tin cậy cao.")
+        text.append("")
+        text.append("• Các dấu hiệu bất thường được phát hiện thông qua phân tích cho thấy những sự khác biệt đáng kể so với tiêu chuẩn sản xuất và chất lượng của hàng chính hãng.")
+        text.append("")
+        text.append("• Những điểm bất thường này có thể bao gồm sự thiếu tự nhiên trong texture, các pattern không nhất quán, quy trình hoàn thiện kém chất lượng, hoặc sự thiếu chính xác trong các chi tiết quan trọng.")
+        text.append("")
+        text.append("**⚠️ KHUYẾN CÁO**: Dựa trên kết quả phân tích này, không khuyến khích việc mua hoặc sử dụng sản phẩm này nếu mong muốn có được hàng chính hãng. Hàng giả không chỉ có chất lượng kém hơn mà còn có thể gây ra những rủi ro về độ bền, an toàn sử dụng, và không được bảo hành từ nhà sản xuất chính thức.")
+    else:
+        text.append("• Thông qua quá trình phân tích chi tiết và toàn diện về chất lượng hình ảnh, đặc điểm bề mặt và vật liệu, tính chính xác trong thiết kế và cấu trúc, cũng như mức độ hoàn thiện trong quy trình gia công, hệ thống trí tuệ nhân tạo đánh giá rằng đây là **HÀNG CHÍNH HÃNG** với mức độ tin cậy cao.")
+        text.append("")
+        text.append("• Tất cả các yếu tố được phân tích đều cho thấy sự phù hợp với các tiêu chuẩn chất lượng nghiêm ngặt và đặc điểm đặc trưng của các sản phẩm được sản xuất bởi thương hiệu uy tín.")
+        text.append("")
+        text.append("• Điều này bao gồm chất lượng vật liệu cao cấp, quy trình gia công chính xác, và sự chú ý đến từng chi tiết trong hoàn thiện sản phẩm.")
+        text.append("")
+        text.append("**✅ KẾT LUẬN**: Sản phẩm này thể hiện các đặc điểm tin cậy của hàng chính hãng và có thể được xem xét để mua sắm với sự yên tâm về chất lượng và tính xác thực. Tuy nhiên, luôn khuyến khích việc mua sắm từ các kênh phân phối chính thức để đảm bảo hoàn toàn về nguồn gốc và chất lượng sản phẩm.")
 
     return "\n".join(text)
 

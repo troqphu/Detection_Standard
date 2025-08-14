@@ -465,8 +465,27 @@ function showResult(result, file) {
         
         // Prioritize different explanation sources
         
-        // First priority: feature_analysis.explanation field
-        if (result.feature_analysis && result.feature_analysis.explanation) {
+        // First priority: analysis field from server (already processed)
+        if (result.analysis && typeof result.analysis === 'string') {
+            console.log("Using result.analysis from server");
+            
+            // ✅ KIỂM TRA CONSISTENCY giữa prediction và analysis
+            const isRealPrediction = result.prediction && result.prediction.toLowerCase() === 'real';
+            const analysisHasReal = result.analysis.includes('CHÍNH HÃNG') || result.analysis.includes('hàng CHÍNH HÃNG');
+            const analysisHasFake = result.analysis.includes('SẢN PHẨM GIẢ') || result.analysis.includes('hàng FAKE');
+            
+            // Nếu prediction và analysis nhất quán, dùng server analysis
+            if ((isRealPrediction && analysisHasReal && !analysisHasFake) || 
+                (!isRealPrediction && analysisHasFake && !analysisHasReal)) {
+                console.log("✅ Server analysis consistent with prediction");
+                typeWriter(analysisText, result.analysis);
+            } else {
+                console.log("❌ Server analysis inconsistent with prediction, using dynamic analysis");
+                typeWriter(analysisText, generateDynamicAnalysis());
+            }
+        }
+        // Second priority: feature_analysis.explanation field
+        else if (result.feature_analysis && result.feature_analysis.explanation) {
             console.log("Using feature_analysis.explanation");
             // Check if the explanation is not a generic message
             const explanation = result.feature_analysis.explanation;
@@ -529,21 +548,38 @@ function showResult(result, file) {
         }
     }
 
+    // ✅ LUÔN HIỂN THỊ HEATMAP - dù có lỗi hay không
+    console.log("Checking heatmap in result:", !!result.heatmap);
+    if (result.heatmap) {
+        console.log("✅ Heatmap URL found:", result.heatmap);
+    } else {
+        console.log("❌ No heatmap URL in response");
+        console.log("Full result keys:", Object.keys(result));
+    }
+    
     // Display heatmap if available
     if (result.heatmap) {
-        console.log("Heatmap URL found:", result.heatmap);
+        console.log("Displaying heatmap:", result.heatmap);
         
         // Display heatmap in the image column (inline)
         const heatmapOverlay = document.getElementById('heatmapOverlay');
         const heatmapContainer = document.querySelector('.heatmap-container-inline');
         
         if (heatmapOverlay && heatmapContainer) {
+            console.log("Setting heatmap overlay source");
             // Set inline heatmap image source (KHÔNG can thiệp màu)
             heatmapOverlay.src = result.heatmap;
             heatmapOverlay.style.display = 'block';
+            heatmapOverlay.style.opacity = '1';
+            heatmapContainer.style.display = 'block';
             setTimeout(() => {
                 heatmapContainer.classList.add('show');
+                console.log("Heatmap container should be visible now");
             }, 300);
+        } else {
+            console.log("❌ Heatmap overlay elements not found");
+            console.log("heatmapOverlay:", !!heatmapOverlay);
+            console.log("heatmapContainer:", !!heatmapContainer);
         }
         
         // Also display in the standalone section
