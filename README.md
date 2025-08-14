@@ -14,16 +14,6 @@
 
 </div>
 
-## ✨ Tính năng nổi bật
-
-- 🎯 **Độ chính xác cao**: 90%+ với Vision Transformer
-- 🔬 **Explainable AI**: Phân tích chi tiết lý do phán đoán
-- 🎨 **Attention Heatmap**: Visualize vùng AI tập trung phân tích
-- 🌐 **Web Interface**: Giao diện hiện đại, thân thiện người dùng
-- ⚡ **Real-time API**: FastAPI với tốc độ xử lý nhanh
-- 📊 **Phân tích chuyên sâu**: Đánh giá texture, cấu trúc, chất liệu
-- 🔄 **Multi-scale Analysis**: Phân tích đa mức độ chi tiết
-
 ## 🚀 Quick Start
 
 ### 1. Cài đặt môi trường
@@ -58,20 +48,20 @@ Truy cập:
 
 ```
 Detection_Standard/
-├── 🔧 simple_api.py          # Entry point - khởi chạy server
-├── 📁 src/
+├── simple_api.py          # Entry point - khởi chạy server
+├── src/
 │   ├──  api.py             # FastAPI server chính
 │   ├──  explainer.py       # AI explanation & analysis
 │   ├──  train.py           # Training pipeline
-│   ├── 📁 models/
+│   ├── models/
 │   │   ├── model.py          # Vision Transformer architecture
 │   │   └── se_module.py      # Squeeze-and-Excitation module
-│   ├── 📁 data/
+│   ├── data/
 │   │   ├── dataset.py        # Data loading utilities
-│   │   ├── 📁 train/         # Training data
-│   │   ├── 📁 validation/    # Validation data
-│   │   └── 📁 test/          # Test data
-│   └── 📁 utils/
+│   │   ├── train/         # Training data
+│   │   ├── validation/    # Validation data
+│   │   └── test/          # Test data
+│   └── utils/
 │       ├── utils.py          # Utility functions
 │       └── heatmap_utils.py  # Heatmap generation
 ├──  web/
@@ -248,7 +238,7 @@ augmentation:
 - **Python**: 3.8+
 - **RAM**: 8GB+ (khuyến nghị 16GB)
 - **GPU**: Optional (CUDA-compatible)
-- **Storage**: 5GB+ free space
+- **Storage**: 10GB+ free space
 
 ## 🤝 Contributing
 
